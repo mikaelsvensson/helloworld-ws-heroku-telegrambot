@@ -1,21 +1,13 @@
-import time
-
 from flask import request, Response
 from kik.messages import messages_from_json, TextMessage
 
 from app import application
-
 from app import kik
 
 
 @application.route('/')
 def index():
     return "Hej"
-
-
-@application.route('/time')
-def show_time():
-    return time.strftime("%c")
 
 
 @application.route('/incoming', methods=['POST'])
