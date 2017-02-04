@@ -1,8 +1,8 @@
 from flask import request, Response
-from kik.messages import messages_from_json, TextMessage
-
+from twx.botapi import Message
 from app import application
-from app import kik
+from app import bot
+import json
 
 
 @application.route('/')
@@ -12,19 +12,25 @@ def index():
 
 @application.route('/incoming', methods=['POST'])
 def incoming():
-    if not kik.verify_signature(request.headers.get('X-Kik-Signature'), request.get_data()):
-        return Response(status=403)
+    j = json.loads(request.get_data())
+    m = j['message']
+    msg = Message.from_result(m)
+    print msg
 
-    messages = messages_from_json(request.json['messages'])
+    try:
+        chat_id = msg.chat.id
+        print 'Responding to chat %i using token %s' % (chat_id, bot.token)
+        resp = bot.send_message(
+            chat_id=chat_id,
+            text='You said: %s' % msg.text,
+            parse_mode=None,
+            disable_web_page_preview=None,
+            reply_to_message_id=None,
+            reply_markup=None,
+            disable_notification=False).wait()
+    except Exception as e:
+        print "ERROR: ", e.message
 
-    for message in messages:
-        if isinstance(message, TextMessage):
-            kik.send_messages([
-                TextMessage(
-                    to=message.from_user,
-                    chat_id=message.chat_id,
-                    body=message.body
-                )
-            ])
+    print "send_message returned ", resp
 
     return Response(status=200)

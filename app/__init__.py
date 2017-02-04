@@ -1,16 +1,12 @@
 import os
 
 from flask import Flask
-from kik import KikApi, Configuration
+from twx.botapi import TelegramBot
 
 application = Flask(__name__)
 
-bot_username = os.environ.get('KIK_BOT_USERNAME')
-bot_api_key = os.environ.get('KIK_BOT_APIKEY')
+bot_api_key = os.environ.get('TELEGRAM_BOT_APIKEY')
 
-kik = KikApi(bot_username, bot_api_key)
-
-kik.set_configuration(Configuration(
-    webhook='https://helloworld-kikbot.herokuapp.com/incoming'))
+bot = TelegramBot(bot_api_key)
 
 from app import views
