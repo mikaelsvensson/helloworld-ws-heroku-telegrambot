@@ -15,9 +15,10 @@ def incoming():
     j = json.loads(request.get_data())
     m = j['message']
     msg = Message.from_result(m)
-    print msg
+    print 'Raw message: %s' % msg
 
     try:
+        print 'Received this message from user %d (%s): %s' % (msg.sender.id, msg.sender.first_name, msg.text)
         chat_id = msg.chat.id
         print 'Responding to chat %i using token %s' % (chat_id, bot.token)
         resp = bot.send_message(
